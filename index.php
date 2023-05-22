@@ -40,7 +40,53 @@ $hotels = [
 
 ];
 
-$parking = $_GET["parking"];
+$hotelsCopy = $hotels;
+
+if(isset($_GET["parking"])){
+
+    $hotelParking = [];
+
+    if($_GET["parking"] == 'parking_yes'){
+
+        foreach($hotels as $elem){
+
+            if($elem['parking'] == true){
+                $hotelParking[] = $elem;
+            };      
+        };
+
+        $hotelsCopy = $hotelParking;
+
+    }else if($_GET["parking"] == 'parking_no'){
+
+        foreach($hotels as $elem){
+
+            if($elem['parking'] == false){
+                $hotelParking[] = $elem;
+            };
+        };
+
+        $hotelsCopy = $hotelParking;
+    };
+    
+};
+
+if(isset($_GET["voteChosen"])){
+
+    $hotelVote = [];
+
+    foreach($hotelsCopy as $elem){
+
+        if($elem['vote'] >= $_GET["voteChosen"]){
+            $hotelVote[] = $elem;
+        };
+    };
+
+    $hotelsCopy = $hotelVote;
+};
+
+$parcheggioPres = 'Parcheggio presente';
+$parcheggioAss = 'Parcheggio assente';
 
 ?>
 
@@ -55,46 +101,59 @@ $parking = $_GET["parking"];
   </head>
   <body>
 
-    <div class="container">
+    <div class="container bg-body-tertiary mt-5 rounded-3 p-3">
 
         <h1 class="text-center p-4">Hotels</h1>
+
+        <form action="index.php" method="GET" class="w-50">
+            <div class="d-flex mt-2 mb-4">
+                <select class="form-select w-50" aria-label="Default select example" name="parking">
+                    <option selected>Seleziona parcheggio</option>
+                    <option value="parking_yes">parcheggio presente</option>
+                    <option value="parking_no">parcheggio assente</option>
+                </select>
+    
+                <input type="number" class="form-control w-25 mx-2" name="voteChosen">
+                <button type="submit" class="btn btn-light">Search</button>
+            </div>
+        </form>
 
         <table class="table text-center">
             <thead>
                 <tr>
-                    <?php foreach($hotels as $elem){
-                        echo '<th scope="col">' . $elem["name"] . '</th>';
-                    } ?> 
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Parking</th>
+                    <th>Vote</th>
+                    <th>Distance</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <?php foreach($hotels as $elem){
+
+                <?php 
+
+                foreach($hotelsCopy as $elem){
+                    echo "<tr>";
+                        echo '<td>' . $elem["name"] . '</td>';
                         echo '<td>' . $elem["description"] . '</td>';
-                    } ?>                  
-                </tr>
-                <tr>
-                    <?php foreach($hotels as $elem){
-                        
-                        if($elem["parking"] == true){
-                            echo '<td>Parking: yes</td>';
 
-                        }elseif($elem["parking"] == false){
-                            echo '<td>Parking: no</td>';
+                        echo '<td>';
 
-                        }
-                    } ?>  
-                </tr>
-                <tr>
-                    <?php foreach($hotels as $elem){
-                        echo '<td> Vote: ' . $elem["vote"] . '</td>';
-                    } ?> 
-                </tr>
-                <tr>
-                    <?php foreach($hotels as $elem){
-                        echo '<td> Distance: ' . $elem["distance_to_center"] . 'km</td>';
-                    } ?> 
-                </tr>
+                            if($elem["parking"] == true){
+                                echo $parcheggioPres;
+                            }else{
+                                echo $parcheggioAss;
+                            };
+
+                        '</td>';
+
+                        echo '<td>' . $elem["vote"] . '</td>';
+                        echo '<td>' . $elem["distance_to_center"] . ' km </td>';
+                    "</tr>";
+                };
+
+                ?>
+
             </tbody>
         </table>
     </div>
